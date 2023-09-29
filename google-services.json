@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1008536307940",
+    "project_id": "hermes-81cd6",
+    "storage_bucket": "hermes-81cd6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008536307940:android:6fe901cd21ab1998bb44f1",
+        "android_client_info": {
+          "package_name": "com.testexpopushnotification.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDok-nzlel0T5P8-g6ZzMDU6z1aMhbDSdE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
