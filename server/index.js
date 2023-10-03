@@ -15,7 +15,7 @@ admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
 app.get('/', (_, { send }) => send('Server started!!!'))
 
 // CREATE NOTIFICATION AND SEND
-app.post('/send-web', ({ body: { pushToken, title, body, webPushTokens, userId } }, res) => admin.firestore()
+app.post('/send-web', ({ body: { pushToken, title, body, webPushTokens, userId, data } }, res) => admin.firestore()
   .collection('notifications')
   .doc()
   .set({
@@ -27,7 +27,7 @@ app.post('/send-web', ({ body: { pushToken, title, body, webPushTokens, userId }
   })
   .then(async () => {
     if (webPushTokens && webPushTokens.length) {
-      return Promise.all(webPushTokens.map(token => sendWebNotification({ token, body, title })))
+      return Promise.all(webPushTokens.map(token => sendWebNotification({ token, body, title, data })))
     }
 
     return 'Notification created but have no \'pushToken\''
@@ -44,12 +44,13 @@ app.post('/update/:id', ({ params, body }, res) => admin.firestore()
   .catch((e) => res.status(400).send(e)))
 
 // SEND WEB NOTIFICATION
-const sendWebNotification = ({ token, title, body }) => {
+const sendWebNotification = ({ token, title, body, data }) => {
   const message = {
     notification: {
       title: title || 'Server title',
-      body: body || 'Message from the server'
+      body: body || 'Message from the server',
     },
+    data: data || {},
     webpush: {
       fcmOptions: {
         link: 'http://localhost:5173/#/notifications'
