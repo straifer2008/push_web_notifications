@@ -3,7 +3,6 @@
 // are not available in the service worker.
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js');
-console.log('-----SERVICE WORKER START----')
 
 // Initialize the Firebase app in the service worker by passing in
 // your app's Firebase config object.
@@ -30,27 +29,9 @@ messaging.onBackgroundMessage((payload) => {
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
-        icon: '/inbestme_logo.png'
+        icon: '/inbestme_logo.png',
+        data: payload.data
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-self.addEventListener('notificationclick', (event) => {
-    console.log('On notification click: ', event.notification.tag);
-
-    event.notification.close();
-    // This looks to see if the current is already open and
-    // focuses if it is
-    event.waitUntil(clients.matchAll({
-        type: "window"
-    }).then((clientList) => {
-        for (const client of clientList) {
-            if (client.url === '/' && 'focus' in client)
-                return client.focus();
-        }
-
-        if (clients.openWindow)
-            return clients.openWindow(link);
-    }));
 });

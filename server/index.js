@@ -26,11 +26,21 @@ app.post('/send-web', ({ body: { pushToken, title, body, webPushTokens, userId, 
     createdAt: new Date()
   })
   .then(async () => {
-    if (webPushTokens && webPushTokens.length) {
-      return Promise.all(webPushTokens.map(token => sendWebNotification({ token, body, title, data })))
-    }
+    if (!webPushTokens || !webPushTokens.length) return 'Notification created but have no \'pushToken\'';
 
-    return 'Notification created but have no \'pushToken\''
+    return admin.messaging().sendEachForMulticast({
+      notification: {
+        title: title || 'Server title',
+        body: body || 'Message from the server',
+      },
+      data: data || {},
+      webpush: {
+        fcmOptions: {
+          link: 'https://localhost:5173/notifications'
+        }
+      },
+      tokens: webPushTokens
+    })
   })
   .then((result) => res.status(200).send(result))
   .catch((error) => res.status(400).send(error)))
@@ -42,25 +52,6 @@ app.post('/update/:id', ({ params, body }, res) => admin.firestore()
   .update(body)
   .then(() => res.status(200).send({ id: params.id, ...body }))
   .catch((e) => res.status(400).send(e)))
-
-// SEND WEB NOTIFICATION
-const sendWebNotification = ({ token, title, body, data }) => {
-  const message = {
-    notification: {
-      title: title || 'Server title',
-      body: body || 'Message from the server',
-    },
-    data: data || {},
-    webpush: {
-      fcmOptions: {
-        link: 'http://localhost:5173/#/notifications'
-      }
-    },
-    token
-  }
-
-  return admin.messaging().send(message)
-}
 
 // LISTEN THE PORT
 app.listen(PORT, () => console.log(`Example app listening on - http://localhost:${PORT}`))
