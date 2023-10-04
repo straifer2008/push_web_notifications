@@ -7,3 +7,8 @@
 *.njsproj
 *.sln
 *.sw?
+mobileApp/google-services.json
+mobileApp/GoogleService-Info.plist
+firebaseConfig.json
+hermes-81cd6-firebase-adminsdk-cvecj-31a238d593.json
+webNotificationVapId.json
