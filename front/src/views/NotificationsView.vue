@@ -1,7 +1,8 @@
 <script setup>
 import { deleteNotification, updateNotification, useNotifications } from '@/utils/firebase'
 
-const notifications = useNotifications();
+const notifications = useNotifications()
+
 const onReadNotification = (notification) => updateNotification(notification?.id, { read: !notification?.read })
 const onDeleteNotification = (id) => confirm('Do you want to delete it?') && deleteNotification(id)
 </script>

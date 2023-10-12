@@ -23,7 +23,6 @@ const db = getFirestore(firebaseApp)
 const notificationsCollection = collection(db, 'notifications')
 const notificationsRef = query(
   notificationsCollection,
-  where('accontId', '==', '11'),
   orderBy('createdAt', 'desc'),
   limit(50),
 )
@@ -55,6 +54,15 @@ export const deleteNotification = async (id: string) => {
   } catch (e) {
     console.log('ERROR: deleteNotification', e)
   }
+}
+export const useTestData = () => {
+  const ref = query(
+    collection(db, 'notifications'),
+    // collection(db, 'push-notification'),
+    where('inbestmeAccountId', '==', 'asdasdasda2')
+  );
+
+  return useCollection(ref);
 }
 
 
