@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { TEST_USER_ID } from '../utils/firebase'
+
 defineProps<{
   msg: string
 }>()
@@ -8,7 +10,7 @@ defineProps<{
   <div class="greetings">
     <h1 class="green">{{ msg }}</h1>
     <h3>
-      This is DEMO version of Push Web Notifications
+      TEST_USER_ID: {{TEST_USER_ID}}
     </h3>
   </div>
 </template>

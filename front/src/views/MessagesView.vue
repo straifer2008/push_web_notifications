@@ -1,15 +1,17 @@
 <script setup>
-import { useTestData } from '@/utils/firebase'
-import { toRaw, watch } from 'vue'
+import {
+  useBaseNotifications,
+  updateBaseNotification,
+  deleteBaseNotification,
+} from '@/utils/firebase'
+import { Timestamp } from 'firebase/firestore'
 
-const data = useTestData();
+const data = useBaseNotifications();
 
-watch(data, () => {
-  console.log({
-    testData: toRaw(data?.value),
-    length: data?.value?.length,
-  })
-})
+const onRead = (notification) => updateBaseNotification(notification?.id, {readTime: notification?.readTime ? null : Timestamp.now()})
+const onDelete = (id) => confirm('Do you want to delete it?') && deleteBaseNotification(id)
+const onClick = (notification) => updateBaseNotification(notification?.id, {clickTime: notification?.clickTime ? null : Timestamp.now()});
+
 </script>
 
 <template>
@@ -18,13 +20,24 @@ watch(data, () => {
     <ul>
       <li v-for="item in data" :key="item.id">
         <h2>ID: {{item?.id}}</h2>
+
+        <div class='flex-around'>
+          <button class='btn' @click='onRead(item)'>
+            {{item?.readTime ? 'Unread' : 'Read'}}
+          </button>
+          <button class='btn btn-red' @click='onDelete(item.id)'>Delete</button>
+          <button class='btn btn-blue' @click='onClick(item)'>
+            {{item?.clickTime ? 'UnClick' : 'Click'}}
+          </button>
+        </div>
+
         <code>{{item}}</code>
       </li>
     </ul>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang='scss'>
 @media (min-width: 1024px) {
     .about {
       min-height: 100vh;
@@ -43,6 +56,15 @@ ul {
   overflow-y: auto;
 }
 
+.flex-around {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  row-gap: 20px;
+  margin: 20px 0;
+}
+
 li {
   background-color: #000000;
   color: #ffffff;
@@ -53,8 +75,38 @@ li {
     border-bottom: 1px solid #ffffff;
   }
 }
+
+.btn {
+  background-color:#44c767;
+  border-radius:28px;
+  border:1px solid #18ab29;
+  display:inline-block;
+  cursor:pointer;
+  color:#ffffff;
+  font-size:17px;
+  padding:16px 31px;
+  text-decoration:none;
+  text-shadow:0 1px 0 #2f6627;
+  transition: opacity 0.3s ease-in-out;
+
+  &:hover {
+    opacity: 0.5;
+  }
+
+  &-red {
+    background-color: red;
+    border:1px solid red;
+    text-shadow:0 1px 0 red;
+  }
+
+  &-blue {
+    background-color: blue;
+    border:1px solid blue;
+    text-shadow:0 1px 0 blue;
+  }
+}
 code {
-  white-space: pre;
+  white-space: pre-wrap;
   font-size: 14px;
 }
 </style>

@@ -19,7 +19,16 @@ export default function App() {
 
       <View style={styles.webView}>
         <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>BROWSER:</Text>
-        <WebView source={{ uri: 'https://lutsk.inbestme.com/' }} />
+        <WebView
+          source={{ uri: 'https://lutsk.inbestme.com' }}
+          scalesPageToFit
+          javaScriptEnabled
+          domStorageEnabled
+          startInLoadingState
+          nestedScrollEnabled
+          allowsInlineMediaPlayback
+          cacheEnabled={false}
+        />
       </View>
     </SafeAreaView>
   );

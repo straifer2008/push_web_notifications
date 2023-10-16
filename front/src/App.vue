@@ -2,6 +2,9 @@
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 import NotificationBell from '@/components/NotificationBell.vue'
+import { useUnreadBaseNotifications } from '@/utils/firebase'
+
+const unreadMessages = useUnreadBaseNotifications()
 </script>
 
 <template>
@@ -11,10 +14,13 @@ import NotificationBell from '@/components/NotificationBell.vue'
     <div class="wrapper">
       <HelloWorld msg="Hermes" />
 
-      <nav>
+      <nav class='nowrap'>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/notifications">Notifications <NotificationBell /></RouterLink>
-        <RouterLink to="/messages">Messages</RouterLink>
+        <RouterLink to="/messages">
+          Messages
+          <span class='noty' v-if='unreadMessages?.length'>{{unreadMessages.length}}</span>
+        </RouterLink>
       </nav>
     </div>
   </header>
@@ -28,9 +34,30 @@ header {
   max-height: 100vh;
 }
 
+.nowrap {
+  white-space: nowrap;
+}
+
 .logo {
   display: block;
   margin: 0 auto 2rem;
+}
+
+.noty {
+  margin-left: -10px;
+  margin-top: -10px;
+  color: #ffffff;
+  background: red;
+  width: 20px;
+  height: 20px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  border-radius: 50%;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 nav {

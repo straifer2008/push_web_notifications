@@ -1,9 +1,13 @@
 <script setup>
 import { deleteNotification, updateNotification, useNotifications } from '@/utils/firebase'
+import { toRaw, watch } from 'vue'
+import { Timestamp } from 'firebase/firestore'
 
 const notifications = useNotifications()
+watch(notifications, () => console.log(toRaw(notifications?.value)))
 
-const onReadNotification = (notification) => updateNotification(notification?.id, { read: !notification?.read })
+const onReadNotification = (notification) => updateNotification(notification?.id, { readTime: notification?.readTime ? null : Timestamp.now() })
+const onClickNotification = (notification) => console.log(notification)
 const onDeleteNotification = (id) => confirm('Do you want to delete it?') && deleteNotification(id)
 </script>
 
@@ -15,13 +19,17 @@ const onDeleteNotification = (id) => confirm('Do you want to delete it?') && del
       <li v-for="notification in notifications" :key="notification.id">
         <div>
           <h2 class='green'>{{notification?.title}}</h2>
-          <p>{{notification?.subtitle}}</p>
+          <p v-if='notification.createTime'>Date: {{new Date(notification.createTime.seconds * 1000).toUTCString()}}</p>
+          <p v-if='notification.receiveTime'>Receive: {{new Date(notification.receiveTime.seconds * 1000).toUTCString()}}</p>
+          <p v-if='notification.readTime'>Read: {{new Date(notification.readTime.seconds * 1000).toUTCString()}}</p>
+          <p>{{notification?.body}}</p>
         </div>
 
         <div class='column'>
-          <button :class="{read: notification?.read, unread: !notification.read}"
-                  @click="onReadNotification(notification)">{{ notification?.read ? 'Unread' : 'Read' }}</button>
+          <button :class="{read: notification?.readTime, unread: !notification.readTime}"
+                  @click="onReadNotification(notification)">{{ notification?.readTime ? 'Unread' : 'Read' }}</button>
           <button class='red' @click="onDeleteNotification(notification.id)">Delete</button>
+          <button class='blue' @click="onClickNotification(notification)">Click</button>
         </div>
       </li>
     </ul>
