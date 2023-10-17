@@ -88,6 +88,25 @@ export const updatePushNotification = async (id: string, updated: any) => {
     console.log('ERROR: updatePushNotification', e)
   }
 }
+export const readAll = async () => {
+  try {
+    const unreadQuery = query(
+      baseNotificationsRef,
+      where('readTime', '==', null)
+    );
+    const docs = await getDocs(unreadQuery);
+
+    if (docs.empty) return;
+
+    const batch = writeBatch(db);
+
+    docs?.forEach(({ ref }) => batch.update(ref, { readTime: Timestamp.now() }))
+
+    await batch.commit()
+  } catch (e) {
+    console.log('Error => readAll', e)
+  }
+}
 export const deleteNotification = async (id: string) => {
   if (!id) return console.log('Have no notification ID')
 
@@ -95,13 +114,17 @@ export const deleteNotification = async (id: string) => {
     const notificationRef = doc(db, 'notifications', id)
     if (!notificationRef) return console.log(`Can't find Notification by this ID [${id}]`)
 
-    const batch = writeBatch(db)
     const pushNotificationsQuery = query(
       collection(db, 'push-notifications'),
       where('inbestmeAccountId', '==', TEST_USER_ID),
       where('notificationId', '==', id),
     )
     const pushNotificationSnapshot = await getDocs(pushNotificationsQuery);
+
+    if (pushNotificationSnapshot.empty) return;
+
+    const batch = writeBatch(db);
+
     pushNotificationSnapshot.forEach((v) => batch.delete(v.ref))
 
     batch.delete(notificationRef)

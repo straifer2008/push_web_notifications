@@ -2,10 +2,13 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, SafeAreaView } from 'react-native'
 import { WebView } from 'react-native-webview';
 import { useCloudMessaging } from '@/hooks'
+import { useMemo } from 'react'
 
 export default function App() {
   const { notification } = useCloudMessaging();
   const pushNotification = notification?.request?.content || notification;
+
+  const uri = useMemo(() => notification?.data?.uri, [notification?.data?.uri]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -19,16 +22,18 @@ export default function App() {
 
       <View style={styles.webView}>
         <Text style={{ textAlign: 'center', fontWeight: 'bold' }}>BROWSER:</Text>
-        <WebView
-          source={{ uri: 'https://lutsk.inbestme.com' }}
-          scalesPageToFit
-          javaScriptEnabled
-          domStorageEnabled
-          startInLoadingState
-          nestedScrollEnabled
-          allowsInlineMediaPlayback
-          cacheEnabled={false}
-        />
+        {uri && (
+          <WebView
+            source={{ uri }}
+            scalesPageToFit
+            javaScriptEnabled
+            domStorageEnabled
+            startInLoadingState
+            nestedScrollEnabled
+            allowsInlineMediaPlayback
+            cacheEnabled={false}
+          />
+        )}
       </View>
     </SafeAreaView>
   );

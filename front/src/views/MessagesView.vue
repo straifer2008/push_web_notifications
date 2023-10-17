@@ -2,11 +2,12 @@
 import {
   useBaseNotifications,
   updateBaseNotification,
-  deleteBaseNotification,
+  deleteBaseNotification, readAll, useUnreadBaseNotifications
 } from '@/utils/firebase'
 import { Timestamp } from 'firebase/firestore'
 
 const data = useBaseNotifications();
+const unread = useUnreadBaseNotifications()
 
 const onRead = (notification) => updateBaseNotification(notification?.id, {readTime: notification?.readTime ? null : Timestamp.now()})
 const onDelete = (id) => confirm('Do you want to delete it?') && deleteBaseNotification(id)
@@ -16,7 +17,10 @@ const onClick = (notification) => updateBaseNotification(notification?.id, {clic
 
 <template>
   <div class="about">
-    <h1>This is an Messages page</h1>
+    <h1 class='margin-y'>
+      This is an Messages page
+      <button class='btn' @click='readAll()' :disabled='!unread?.length'>Read all</button>
+    </h1>
     <ul>
       <li v-for="item in data" :key="item.id">
         <h2>ID: {{item?.id}}</h2>
@@ -46,6 +50,20 @@ const onClick = (notification) => updateBaseNotification(notification?.id, {clic
       flex-direction: column;
       justify-content: center;
     }
+}
+
+.margin {
+  margin: 20px;
+
+  &-y {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  &-x {
+    margin-left: 20px;
+    margin-right: 20px;
+  }
 }
 
 ul {
@@ -88,6 +106,14 @@ li {
   text-decoration:none;
   text-shadow:0 1px 0 #2f6627;
   transition: opacity 0.3s ease-in-out;
+
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    &:hover {
+      opacity: 0.3;
+    }
+  }
 
   &:hover {
     opacity: 0.5;

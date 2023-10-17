@@ -2,7 +2,6 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const admin = require('firebase-admin')
 const serviceAccount = require('../hermes-81cd6-firebase-adminsdk-cvecj-31a238d593.json')
-const { uid } = require('uid')
 
 const PORT = 49000
 const app = express()
@@ -94,20 +93,28 @@ app.post('/read', async ({ body }, res) => {
 app.post('/create-base', async ({ body }, res) => {
   try {
     const notificationRef = firestore.collection('base-notifications').doc();
+    let webTokens = body?.webTokens || null;
+    let mobileTokens = body.mobileTokens || null;
+
+    if (body?.inbestmeAccountId && !body?.webTokens && !body.mobileTokens) {
+      const user = await firestore.collection('users').doc(body?.inbestmeAccountId).get();
+      const userData = user.data();
+
+      mobileTokens = body?.mobileTokens || userData?.mobileTokens || null;
+      webTokens = body?.webTokens || userData?.webTokens || null;
+    }
 
     await notificationRef.set({
       createTime: admin.firestore.Timestamp.now(),
       receiveTime: null,
       readTime: null,
       clickTime: null,
-
       mobileClickTime: null,
       mobileSendTime: null,
-      mobileTokens:  body?.mobileTokens || null,
-
-      webTokens: body?.webTokens || null,
       webSendTime: null,
       sendData: null,
+      mobileTokens,
+      webTokens,
       ...body
     });
     const notification = await notificationRef.get();
